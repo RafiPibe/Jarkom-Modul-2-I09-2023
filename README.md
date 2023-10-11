@@ -476,7 +476,7 @@ iface eth0 inet static
     - Wisanggeni:8003
 </p>
 
-***FOR PRAKBAKUSUMA: 8001***
+***FOR PRABUKUSUMA: 8001***
 - We need to install these following commands so that we can modify our ports
 
 ```
