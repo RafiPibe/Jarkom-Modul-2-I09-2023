@@ -6,7 +6,9 @@ cat /etc/resolv.conf
 
 apt-get update
 apt-get install dnsutils -y
-apt-get install libapache2-mod-php7.0
+apt-get install lynx -y
+apt-get install apache2 -y
+apt-get install libapache2-mod-php7.0 -y
 apt install nginx php php-fpm -y
 php -v
 ```
