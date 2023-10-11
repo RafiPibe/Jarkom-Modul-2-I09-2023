@@ -475,3 +475,75 @@ iface eth0 inet static
     - Abimanyu:8002<br>
     - Wisanggeni:8003
 </p>
+
+***FOR PRAKBAKUSUMA: 8001***
+- We need to install these following commands so that we can modify our ports
+
+```
+apt-get install lynx -y
+apt-get install apache2 -y
+apt-get install libapache2-mod-php7.0 -y
+```
+
+- After sucessfully installing those commands, we can begin by changing the directory into ```/etc/apache2/sites-available```
+```
+cd cd /etc/apache2/sites-available
+```
+
+- Then, copy 000-default.conf file into 000-default-8001.conf
+```
+cp 000-default.conf default-8001.conf
+```
+
+- Open the 000-default-8001.conf file
+	- Change the VirtualHost from 80 into 8001
+   	- Change the DocumentRoot from /var/www/html into /var/www/web-8001
+ 
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161662485233926174/image.png?ex=65391d7f&is=6526a87f&hm=a6d28041643c9b7228aae5da89f543686bddd8235567eac533cc4430aa17173d&">
+
+- Add the port 8001 in ports.conf file located in ```/etc/apache2```
+	- Add Listen 8001
+
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161662596966002748/image.png?ex=65391d99&is=6526a899&hm=193b7ad29343daf85c54ce0e0f87a351bd7c623109a598493abff33da2ce85b9&">
+
+- Activate the 000-default-8001.conf configuration using ```a2ensite```
+
+```
+a2ensite default-8001.conf
+```
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161662745536635000/image.png?ex=65391dbd&is=6526a8bd&hm=63d19a79121524074ecb684412cf9e1904544452804cc0404996b3d085760dc5&">
+
+- Restart Apache
+
+```
+service apache2 restart
+```
+
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161663021123387452/image.png?ex=65391dfe&is=6526a8fe&hm=06c07df1bfcc29fecdac7a3a5b865ff8fdd1dbf713a8704422b21362111e7a61&">
+
+- Create a new directory in ```/var/www``` with the name of web-8001
+
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161663120285110282/image.png?ex=65391e16&is=6526a916&hm=18e1562aa833a4e1e9912c5162ea2baced660371f86b605bec18d38112289e9e&">
+
+- Enter the directory and create a file called index.php
+	- Edit index.php
+```
+nano /var/www/web-8001/index.php
+```
+```
+<?php
+    echo "Im running on port 8001";
+?>
+```
+
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161663518098079915/image.png?ex=65391e75&is=6526a975&hm=bbfb1167a9623e36f71f8371d0f1ac45bd2fd38f102a9c1319985e3d0095f5b8&">
+
+- Run the file with ```lynx http://10.63.3.2:8001```
+
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161663842837876806/image.png?ex=65391ec2&is=6526a9c2&hm=513152610789de04995c008368109d9104a5d98cf54c7f1ae7ad25175a33b4e6&">
+
+***FOR ABIMANYU: 8002 & WISANGGENI:8003***
+
+- Follow the same exact step with different port name
+
+
