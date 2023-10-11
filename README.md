@@ -157,7 +157,7 @@ iface eth0 inet static
    	- and inside the nano file, we edit it as below:
    	  	<img src="https://media.discordapp.net/attachments/1153305482438660178/1161160822815473714/image.png?ex=65374a49&is=6524d549&hm=3158aeb5e704ab286818aa164be0955ed91da2b73932df54e2fa7fdde79bfa2d&=&width=690&height=445" alt="">
        - Restart the bind9 with the command `service bind9 restart`
- - Then we check if the DNS works in ArjunaLoadBalancer
+ - Then we check if the DNS works in other Client
    	- We first need to change the IP with `nano /etc/resolv.conf`
    	  	<img src="https://media.discordapp.net/attachments/1153305482438660178/1161163133650473020/image.png?ex=65374c70&is=6524d770&hm=02ecd4d998e02a844f9e6b915c5f2a8e1f81c2e3d6d0cbb70b15de9f147253a2&=&width=682&height=445" alt="">
    	- Then we ping it with `ping arjuna.i09.com -c 5`<br>
