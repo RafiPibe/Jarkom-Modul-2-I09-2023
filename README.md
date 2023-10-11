@@ -211,6 +211,7 @@ iface eth0 inet static
   ```
 - We edit the file inside using `nano /etc/bind/jarkom/2.63.10.in-addr.arpa` command.<br>
   <img src="https://media.discordapp.net/attachments/1153305482438660178/1161203549426950176/image.png?ex=65377214&is=6524fd14&hm=4faeb0deb0e4f17297ad6f02cc7905d01936ade89c13e63163fd8c94528a6268&=&width=676&height=395" alt="">
+- Restart the bind9 using `service bind9 restart`
 - Then on another client, we do the steps below first.
 	- direct the nameserver into the router again by using `echo nameserver 192.168.122.1 > /etc/resolv.conf`
   	- use `apt-get update`, then do `apt-get install dnsutils`
