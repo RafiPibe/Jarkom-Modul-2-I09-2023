@@ -27,6 +27,15 @@ echo '
     file "/etc/bind/jarkom/2.63.10.in-addr.arpa";
     }; ' > /etc/bind/named.conf.local
 
+# nano /etc/bind/named.conf.options
+echo 'options {
+    directory "/var/cache/bind";
+    //dnssec-validation auto;
+    allow-query{any;};
+
+    auth-nxdomain no;   # conform to RFC1035
+    listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
 
 cp /etc/bind/db.local /etc/bind/jarkom/arjuna.i09.com
 # nano /etc/bind/jarkom/arjuna.i09.com
