@@ -322,8 +322,9 @@ iface eth0 inet static
 <p>Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.</p>
 
 - Now we will focus on the web server. the first thing to do is set up the workers, that is `PrabukusumaWebServer`,`AbimanyuWebServer`,`WisanggeniWebServer`
-- In the `PrabukusumaWebServer` we will do as follows;
+<h3>In the `PrabukusumaWebServer` we will do as follows</h3>
 - Install Nginx and PHP and check the PHP version
+
  ```
  apt-get update && apt-get install nginx php php-fpm -y
  php -v
@@ -348,7 +349,7 @@ iface eth0 inet static
   ```
   nano /etc/nginx/sites-available/jarkom
   ```
-- Now insert the server block configuration
+- Now insert the server block configuration. for the `server_name` we will change it depending on the ip. On Prabukusuma, this will be `server_name 10.63.3.2`<br>
   ```
   server {
 
@@ -357,7 +358,7 @@ iface eth0 inet static
 	 	root /var/www/jarkom;
 	
 	 	index index.php index.html index.htm;
-	 	server_name _;
+	 	server_name 10.63.3.2;
 	
 	 	location / {
 	 			try_files $uri $uri/ /index.php?$query_string;
@@ -377,6 +378,10 @@ iface eth0 inet static
 	 	access_log /var/log/nginx/jarkom_access.log;
  	}
   ```
+- Then save, and make a `symlink`
+  ```
+  ln -s /etc/nginx/sites-available/jarkom /etc/nginx/sites-enabled
+  ```
 - After we do all that, restart the Nginx and check if it runs well.
   ```
   service nginx restart
@@ -384,3 +389,84 @@ iface eth0 inet static
   ```
   nginx -t
   ```
+  <img src="https://media.discordapp.net/attachments/1153305482438660178/1161647819078258708/image.png?ex=65390fd6&is=65269ad6&hm=9f217aed006e42c8af339165b7baa3fe919c83a8df9b32a98f6e4f9360796663&=&width=677&height=111">
+- If it all goes well, we can continue to do this configuration in the 2 other web servers. The only key differences is we will change the inside of each php file and the server block configurations as follows<br>
+<h3>AbimanyuWebServer</h3>
+- PHP file
+ 
+ ```php
+  <?php
+ echo "Hello, You're on Abimanyu";
+ ?>
+ ```
+- Server Block Configuration
+ ```
+  server {
+
+	 	listen 80;
+	
+	 	root /var/www/jarkom;
+	
+	 	index index.php index.html index.htm;
+	 	server_name 10.63.3.3;
+	
+	 	location / {
+	 			try_files $uri $uri/ /index.php?$query_string;
+	 	}
+	
+	 	# pass PHP scripts to FastCGI server
+	 	location ~ \.php$ {
+	 	include snippets/fastcgi-php.conf;
+	 	fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+	 	}
+	
+	 	location ~ /\.ht {
+	 			deny all;
+	 	}
+	
+	 	error_log /var/log/nginx/jarkom_error.log;
+	 	access_log /var/log/nginx/jarkom_access.log;
+ 	}
+  ```
+<img src="https://media.discordapp.net/attachments/1153305482438660178/1161652332635885578/image.png?ex=6539140a&is=65269f0a&hm=01f799bfc8767910d16f17b06dc26e4ef873036b6fd091bbb84dc7f8a16fd2ca&=&width=681&height=113">
+
+ <h3>WisanggeniWebServer</h3>
+- PHP file
+ 
+ ```php
+  <?php
+ echo "Hello, You're on Wisanggeni";
+ ?>
+ ```
+- Server Block Configuration
+ ```
+  server {
+
+	 	listen 80;
+	
+	 	root /var/www/jarkom;
+	
+	 	index index.php index.html index.htm;
+	 	server_name 10.63.3.4;
+	
+	 	location / {
+	 			try_files $uri $uri/ /index.php?$query_string;
+	 	}
+	
+	 	# pass PHP scripts to FastCGI server
+	 	location ~ \.php$ {
+	 	include snippets/fastcgi-php.conf;
+	 	fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+	 	}
+	
+	 	location ~ /\.ht {
+	 			deny all;
+	 	}
+	
+	 	error_log /var/log/nginx/jarkom_error.log;
+	 	access_log /var/log/nginx/jarkom_access.log;
+ 	}
+  ```
+<img src="https://media.discordapp.net/attachments/1153305482438660178/1161653344633372703/image.png?ex=653914fb&is=65269ffb&hm=e9ca153fe35032b27bf67318f36c2838be8e01d1653e9a573609f51861445e61&=&width=681&height=109">
+
+<h1>Problem 10</h1>
