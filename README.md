@@ -487,7 +487,7 @@ apt-get install libapache2-mod-php7.0 -y
 
 - After sucessfully installing those commands, we can begin by changing the directory into ```/etc/apache2/sites-available```
 ```
-cd cd /etc/apache2/sites-available
+cd /etc/apache2/sites-available
 ```
 
 - Then, copy 000-default.conf file into 000-default-8001.conf
@@ -546,4 +546,5 @@ nano /var/www/web-8001/index.php
 
 - Follow the same exact step with different port name
 
-
+<img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161668995485806602/image.png?ex=6539238f&is=6526ae8f&hm=bdcba0fdef9fc026da072a22c618f77ed2065db113debbaa15dbb2221e95e44f&">
+<img src"https://cdn.discordapp.com/attachments/1153305482438660178/1161669100184031322/image.png?ex=653923a8&is=6526aea8&hm=523905e0c805b2985abc13a7820e9970612a2b8b8934c38d6b65e78c1ba19e3b&">
