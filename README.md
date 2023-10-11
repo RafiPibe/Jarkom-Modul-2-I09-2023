@@ -470,3 +470,8 @@ iface eth0 inet static
 <img src="https://media.discordapp.net/attachments/1153305482438660178/1161653344633372703/image.png?ex=653914fb&is=65269ffb&hm=e9ca153fe35032b27bf67318f36c2838be8e01d1653e9a573609f51861445e61&=&width=681&height=109">
 
 <h1>Problem 10</h1>
+<p>Kemudian gunakan algoritma Round Robin untuk Load Balancer pada Arjuna. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh<br>
+    - Prabakusuma:8001<br>
+    - Abimanyu:8002<br>
+    - Wisanggeni:8003
+</p>
