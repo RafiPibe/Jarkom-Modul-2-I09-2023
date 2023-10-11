@@ -319,3 +319,67 @@ iface eth0 inet static
 
 <h1>Problem 9</h2>
 <p>Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.</p>
+
+- Now we will focus on the web server. the first thing to do is set up the workers, that is `PrabukusumaWebServer`,`AbimanyuWebServer`,`WisanggeniWebServer`
+- In the `PrabukusumaWebServer` we will do as follows;
+- Install Nginx and PHP and check the PHP version
+ ```
+ apt-get update && apt-get install nginx php php-fpm -y
+ php -v
+ ```
+ <img src="https://media.discordapp.net/attachments/1153305482438660178/1161620159287541920/image.png?ex=6538f613&is=65268113&hm=61efa0c35ebe6b3ddb565a4cae28de9842eef23a02842d662137041d67c945fe&=&width=807&height=84">
+- then make a new directory in `var/www` with the name `jarkom`
+
+ ```
+ mkdir /var/www/jarkom
+ ```
+- make a new file with the name `index.php` inside the directory and add the code below.<br>
+
+ ```
+ nano /var/www/jarkom/index.php
+ ```
+ ```php
+  <?php
+ echo "Hello, You're on Prabukusuma";
+ ?>
+ ```
+- Then we are going to configure Nginx by doing
+  ```
+  nano /etc/nginx/sites-available/jarkom
+  ```
+- Now insert the server block configuration
+  ```
+  server {
+
+	 	listen 80;
+	
+	 	root /var/www/jarkom;
+	
+	 	index index.php index.html index.htm;
+	 	server_name _;
+	
+	 	location / {
+	 			try_files $uri $uri/ /index.php?$query_string;
+	 	}
+	
+	 	# pass PHP scripts to FastCGI server
+	 	location ~ \.php$ {
+	 	include snippets/fastcgi-php.conf;
+	 	fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+	 	}
+	
+	 	location ~ /\.ht {
+	 			deny all;
+	 	}
+	
+	 	error_log /var/log/nginx/jarkom_error.log;
+	 	access_log /var/log/nginx/jarkom_access.log;
+ 	}
+  ```
+- After we do all that, restart the Nginx and check if it runs well.
+  ```
+  service nginx restart
+  ```
+  ```
+  nginx -t
+  ```
