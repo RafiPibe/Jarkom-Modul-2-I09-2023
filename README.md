@@ -548,3 +548,409 @@ nano /var/www/web-8001/index.php
 
 <img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161668995485806602/image.png?ex=6539238f&is=6526ae8f&hm=bdcba0fdef9fc026da072a22c618f77ed2065db113debbaa15dbb2221e95e44f&">
 <img src="https://cdn.discordapp.com/attachments/1153305482438660178/1161669100184031322/image.png?ex=653923a8&is=6526aea8&hm=523905e0c805b2985abc13a7820e9970612a2b8b8934c38d6b65e78c1ba19e3b&">
+
+<h1>REVISION</h1>
+
+<h2>Problem 9 & 10</h2>
+
+- Open up the Abimanyu, Prabukusuma, Wisanggeni web server
+  	- ```echo nameserver 192.168.122.1 > /etc/resolv.conf```
+  	- ```apt-get update && apt install nginx php php-fpm -y```
+  	- ```mkdir /var/www/arjuna.i09```
+  	- ```nano /var/www/arjuna.i09/index.php```
+
+```
+<?php
+$hostname = gethostname();
+$date = date('Y-m-d H:i:s');
+$php_version = phpversion();
+$username = get_current_user();
+
+
+echo "Hello World!<br>";
+echo "I'm: $username<br>";
+echo "I'm in: $hostname<br>";
+echo "PHP Version: $php_version<br>";
+echo "Date: $date<br>";
+?>
+```
+
+- ```nano /etc/nginx/sites-available/default```
+  
+```
+server {
+	listen 8001; adjust to each webserver
+
+	root /var/www/arjuna.i09;
+
+	index index.php index.html index.htm;
+	server_name _;
+
+	location / {
+		try_files $uri $uri/ /index.php?$query_string;
+	}
+
+	# pass PHP scripts to FastCGI server
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+
+	error_log /var/log/nginx/i09_error.log;
+	access_log /var/log/nginx/i09_access.log;
+}
+```
+
+- ```service php7.2-fpm start```
+- ```service nginx restart```
+- Go to Arjuna Load Balancer
+- ```nano /etc/nginx/sites-available/default```
+
+```
+upstream myweb  {
+	server 192.198.3.3:8003; #IP Wisanggeni
+	server 192.198.3.4:8002; #IP Prabukusuma
+	server 192.198.3.5:8001; #IP Abimanyu
+}
+
+server {
+	listen 80;
+	server_name arjuna.i09.com;
+
+	location / {
+		proxy_pass http://myweb;
+	}
+}
+```
+
+- ```service nginx restart``` and ```service bind9 restart```
+
+<h2>Problem 11</h2>
+
+- Go to Yudhistira DNS Master
+- ```nano /etc/bind/abimanyu/abimanyu.i09.conf```
+
+```
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.i09.com. root.abimanyu.i09.com. (
+                         2023101501;    ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      abimanyu.i09.com.
+@       IN      A       192.198.3.5     ; IP Abimanyu
+www     IN	CNAME	abimanyu.i09.com.
+parikesit IN	A	192.198.3.5     ; IP Abimanyu
+ns1	IN	A	192.198.2.3 ; IP Werk
+baratayuda IN	NS	ns1
+```
+
+- Go to Abimanyu Server
+	- ```echo nameserver 192.168.122.1 > /etc/resolv.conf```
+	- ```apt-get update``` and ```apt-get install apache2```
+	- ```apt-get install python3-pip``` and ```pip3 install gdown```
+	- ```cd /var/www```
+- Download the zip file
+- abimanyu.i09.com
+```
+gdown 1a4V23hwK9S7hQEDEcv9FL14UkkrHc-Zc
+unzip abimanyu.yyy.com.zip
+rm abimanyu.yyy.com.zip
+mv abimanyu.yyy.com abimanyu.i09
+```
+
+- parikesit.abimanyu.d14.com
+```
+gdown 1LdbYntiYVF_NVNgJis1GLCLPEGyIOreS
+unzip parikesit.abimanyu.yyy.com.zip
+rm parikesit.abimanyu.yyy.com.zip
+mv parikesit.abimanyu.yyy.com parikesit.abimanyu.i09
+```
+- rjp.baratayuda.abimanyu.yyy.com
+```
+gdown 1pPSP7yIR05JhSFG67RVzgkb-VcW9vQO6
+unzip rjp.baratayuda.abimanyu.yyy.com.zip
+rm rjp.baratayuda.abimanyu.yyy.com.zip
+mv rjp.baratayuda.abimanyu.yyy.com rjp.baratayuda.abimanyu.i09
+```
+- nano /etc/apache2/sites-available/000-default.conf
+```
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName abimanyu.i09.com
+	ServerAlias www.abimanyu.i09.com
+	DocumentRoot /var/www/abimanyu.i09
+	
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+<h2>Problem 12</h2>
+
+- ```nano /var/www/abimanyu.i09/.htaccess```
+```
+RewriteEngine On
+RewriteRule ^index\.php/home$ /home [R=301,L]
+```
+- ```a2enmod rewrite```
+- ```nano /etc/apache2/sites-available/000-default.conf```
+```
+<Directory /var/www/abimanyu.i09>
+	Options +Indexes +FollowSymLinks -Multiviews
+	AllowOverride All
+        Require all granted
+</Directory>
+```
+
+<h2>Problem 13</h2>
+
+- ```nano /etc/apache2/sites-available/parikesit.abimanyu.i09.conf```
+```
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName parikisit.abimanyu.i09.com
+    DocumentRoot /var/www/parikesit.abimanyu.i09
+</VirtualHost>
+```
+- ```a2ensite parikesit.abimanyu.i09.conf```
+
+<h2>Problem 14</h2>
+
+- ```nano /etc/apache2/sites-available/parikesit.abimanyu.i09.conf```
+```
+<VirtualHost *:80>
+ 	ServerAdmin webmaster@localhost
+    	ServerName parikisit.abimanyu.i09.com
+    	DocumentRoot /var/www/parikesit.abimanyu.i09
+
+	<Directory /var/www/parikesit.abimanyu.i09/public>
+        	Options +Indexes
+    	</Directory>
+
+    	<Directory /var/www/parikesit.abimanyu.i09/secret>
+       		Options -Indexes
+    	</Directory>
+</VirtualHost>
+```
+
+<h2>Problem 15</h2>
+
+- ```nano /etc/apache2/sites-available/parikesit.abimanyu.i09.conf```
+
+```
+<VirtualHost *:80>
+ 	ServerAdmin webmaster@localhost
+    	ServerName parikisit.abimanyu.i09.com
+    	DocumentRoot /var/www/parikesit.abimanyu.i09
+
+	<Directory /var/www/parikesit.abimanyu.i09/public>
+        	Options +Indexes
+    	</Directory>
+
+    	<Directory /var/www/parikesit.abimanyu.i09/secret>
+       		Options -Indexes
+    	</Directory>
+	
+	<Directory /var/www/parikesit.abimanyu.i09/error>
+    		Options FollowSymLinks
+    		AllowOverride None
+    		Require all granted
+	</Directory>
+
+	ErrorDocument 404 /error/404.html
+	ErrorDocument 403 /error/403.html
+</VirtualHost>
+```
+
+<h2>Problem 16</h2>
+
+- ```nano /etc/apache2/sites-available/parikesit.abimanyu.i09.conf```
+
+```
+<VirtualHost *:80>
+ 	ServerAdmin webmaster@localhost
+    	ServerName parikisit.abimanyu.i09.com
+    	DocumentRoot /var/www/parikesit.abimanyu.i09
+
+	<Directory /var/www/parikesit.abimanyu.i09/public>
+        	Options +Indexes
+    	</Directory>
+
+    	<Directory /var/www/parikesit.abimanyu.i09/secret>
+       		Options -Indexes
+    	</Directory>
+	
+	<Directory /var/www/parikesit.abimanyu.i09/error>
+    		Options FollowSymLinks
+    		AllowOverride None
+    		Require all granted
+	</Directory>
+	
+	Alias "/js" "/var/www/parikesit.abimanyu.i09/public/js"
+
+	ErrorDocument 404 /error/404.php
+	ErrorDocument 403 /error/403.php
+</VirtualHost>
+```
+
+<h2>Problem 17</h2>
+
+- Go to DNS Slave Werkudara to set up subdomain rjp in Abimanyu
+- ```nano /etc/bind/delegasi/baratayuda.abimanyu.i09.com```
+
+```
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.i09.com. root.baratayuda.abimanyu.d$
+                              2022100601                ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      baratayuda.abimanyu.i09.com.
+@       IN      A       192.198.2.3 ; IP Werkudara
+www	IN      CNAME   baratayuda.abimanyu.i09.com.
+rjp	IN      A	192.198.3.5 ; IP Abimanyu
+```
+
+- Go to Abimanyu
+```nano /etc/apache2/sites-available/rjp.baratayuda.abimanyu.i09.conf```
+```
+<VirtualHost *:14000>
+    	ServerAdmin webmaster@localhost
+	ServerName rjp.baratayuda.abimanyu.i09.com
+    	ServerAlias www.rjp.baratayuda.abimanyu.i09.com
+   	DocumentRoot /var/www/rjp.baratayuda.abimanyu.i09
+</VirtualHost>
+
+<VirtualHost *:14400>
+	ServerAdmin webmaster@localhost
+	ServerName rjp.baratayuda.abimanyu.i09.com
+    	ServerAlias www.rjp.baratayuda.abimanyu.i09.com
+   	DocumentRoot /var/www/rjp.baratayuda.abimanyu.i09
+</VirtualHost>
+```
+
+- ```a2ensite rjp.baratayuda.abimanyu.i09.conf```
+- Add ports in ```/etc/apache2.ports.conf```
+```
+Listen 14000
+Listen 14400
+```
+
+<h2>Problem 18</h2>
+
+- ```nano /var/www/rjp.baratayuda.abimanyu.i09/.htaccess```
+```
+AuthType Basic
+AuthName "Authentication Required"
+AuthUserFile /etc/apache2/.htpasswd
+Require user Wayang
+```
+- ```htpasswd -c /etc/apache2/.htpasswd Wayang```
+- Input "baratayudad14" as the password
+- ```nano /etc/apache2/sites-available/rjp.baratayuda.abimanyu.i09.conf```
+```
+<VirtualHost *:14000>
+	ServerAdmin webmaster@localhost
+	ServerName rjp.baratayuda.abimanyu.i09.com
+    	ServerAlias www.rjp.baratayuda.abimanyu.i09.com
+   	DocumentRoot /var/www/rjp.baratayuda.abimanyu.i09
+	
+	<Directory /var/www/rjp.baratayuda.abimanyu.i09>
+        	Options Indexes FollowSymLinks
+        	AllowOverride All
+        	Require all granted
+    	</Directory>
+</VirtualHost>
+
+<VirtualHost *:14400>
+	ServerAdmin webmaster@localhost
+	ServerName rjp.baratayuda.abimanyu.i09.com
+    	ServerAlias www.rjp.baratayuda.abimanyu.i09.com
+   	DocumentRoot /var/www/rjp.baratayuda.abimanyu.i09
+	
+	<Directory /var/www/rjp.baratayuda.abimanyu.i09>
+        	Options Indexes FollowSymLinks
+        	AllowOverride All
+        	Require all granted
+    	</Directory>
+</VirtualHost>
+```
+
+<h2>Problem 19</h2>
+
+- Go to Yudhistra DNS Master
+- ```nano /etc/bind/abimanyu/abimanyu.i09.com```
+```
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.i09.com. root.abimanyu.i09.com. (
+                         2023101501;    ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      abimanyu.i09.com.
+@       IN      A       192.198.3.5     ; IP Abimanyu
+www     IN	CNAME	abimanyu.i09.com.
+parikesit IN	A	192.198.3.5     ; IP Abimanyu
+ns1	IN	A	192.198.2.3 ; IP Werk
+baratayuda IN	NS	ns1
+192.198.3.5 IN	CNAME	www.abimanyu.d14.com.
+```
+
+<h2>Problem 20</h2>
+
+- Go to Abimanyu Web Server
+- ```nano /var/www/parikesit.abimanyu.i09/.htaccess```
+```
+RewriteEngine On
+RewriteRule .*abimanyu.* /abimanyu.png [R,L]
+```
+- ```nano /etc/apache2/sites-available/parikesit.abimanyu.i09.conf```
+```
+<VirtualHost *:80>
+ 	ServerAdmin webmaster@localhost
+    	ServerName parikisit.abimanyu.i09.com
+    	DocumentRoot /var/www/parikesit.abimanyu.i09
+
+	<Directory /var/www/parikesit.abimanyu.i09/public>
+        	Options +Indexes
+    	</Directory>
+
+    	<Directory /var/www/parikesit.abimanyu.i09/secret>
+       		Options -Indexes
+    	</Directory>
+	
+	<Directory /var/www/parikesit.abimanyu.i09/error>
+    		Options FollowSymLinks
+    		AllowOverride None
+    		Require all granted
+	</Directory>
+	
+	<Directory /var/www/parikesit.abimanyu.i09>
+		Options +Indexes +FollowSymLinks -Multiviews
+		AllowOverride All
+	</Directory>
+
+	Alias "/js" "/var/www/parikesit.abimanyu.i09/public/js"
+
+	ErrorDocument 404 /error/404.php
+	ErrorDocument 403 /error/403.php
+</VirtualHost>
+```
